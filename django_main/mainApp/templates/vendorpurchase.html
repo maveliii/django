@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PO List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Datepicker CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light grey background */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1 {
+            color: #343a40; /* Dark grey */
+        }
+        .btn-approve, .btn-reject, .btn-confirm {
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn-approve {
+            background-color: #28a745; /* Bootstrap success color */
+        }
+        .btn-approve:hover {
+            background-color: #218838; /* Darker shade for hover */
+        }
+        .btn-reject {
+            background-color: #dc3545; /* Bootstrap danger color */
+        }
+        .btn-reject:hover {
+            background-color: #c82333; /* Darker shade for hover */
+        }
+        .btn-confirm {
+            background-color: #007bff; /* Bootstrap primary color */
+            display: none; /* Initially hidden */
+        }
+        .btn-confirm:hover {
+            background-color: #0056b3; /* Darker shade for hover */
+        }
+        .btn-upload, .btn-upload-file {
+            background-color: #ffc107; /* Bootstrap warning color */
+        }
+        .btn-upload:hover, .btn-upload-file:hover {
+            background-color: #e0a800; /* Darker shade for hover */
+        }
+        .datepicker {
+            border: 1px solid #495057; /* Darker border color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Purchase Orders</h1>
+
+        <!-- Vendor Information and Upload Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3>Vendor: {{ vendorname }}</h3> <!-- Display vendor name -->
+            </div>
+        </div>
+
+        <!-- Search and filter options -->
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search PONO or Customer">
+        </div>
+        <div class="mb-3">
+            <input type="checkbox" id="filterProposedNull" class="form-check-input" name="filterProposedNull" checked>
+            <label class="form-check-label" for="filterProposedNull">Inspection Date not Proposed</label>
+        </div>
+        <div class="mb-3">
+            <input type="checkbox" id="filterInspectionNull" class="form-check-input" name="filterInspectionNull">
+            <label class="form-check-label" for="filterInspectionNull">Inspection date not approved</label>
+        </div>
+        <div class="mb-3">
+            <input type="checkbox" id="filterBothNotNull" class="form-check-input" name="filterBothNotNull">
+            <label class="form-check-label" for="filterBothNotNull">Hide POs where Inspection date is approved</label>
+        </div>
+
+        <!-- Table displaying purchase orders -->
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">PONO</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Delivery Date</th>
+                        <th scope="col">Inspection Date Submission</th>
+                        <th scope="col">Inspection Date</th>
+                        <th scope="col">Inspection Date Proposed</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                        <th scope="col">Upload Files</th>
+                    </tr>
+                </thead>
+                <tbody id="purchaseOrdersTableBody">
+                    <!-- Loop through purchase orders -->
+                    {% for purchase in purchase %}
+                        <tr class="po-row" data-pono="{{ purchase.pono }}" data-inspection-date="{{ purchase.inspectiondate }}" data-inspection-date-proposed="{{ purchase.inspectiondateproposed }}">
+                            <td>{{ purchase.pono }}</td>
+                            <td>{{ purchase.customer }}</td>
+                            <td>{{ purchase.shipdate }}</td>
+                            <td>{{ purchase.iasubmissiondate }}</td>
+                            <td>{{ purchase.inspectiondate }}</td>
+                            <td>
+                                <!-- Display proposed inspection date or input for proposing -->
+                                {% if not purchase.inspectiondate %}
+                                    <div class="input-group date">
+                                        <input type="text" class="form-control datepicker" name="inspection_date_proposed" value="{% if purchase.inspectiondateproposed %}{{ purchase.inspectiondateproposed }}{% else %}Select Date{% endif %}">
+                                        <span class="input-group-addon">
+                                            <i class="glyphicon glyphicon-calendar"></i>
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    {{ purchase.inspectiondateproposed }}
+                                {% endif %}
+                            </td>
+                            <td>{{ purchase.status }}</td>
+                            <td>
+                                <!-- Show confirm button if inspection date is not set -->
+                                {% if not purchase.inspectiondate %}
+                                    <button class="btn btn-primary btn-confirm" data-pono="{{ purchase.pono }}">Confirm</button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- Button to upload files -->
+                                <button type="button" class="btn btn-warning btn-upload-file" data-bs-toggle="modal" data-bs-target="#uploadModal" data-pono="{{ purchase.pono }}">Upload Files</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal for Upload -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload Files</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for file upload -->
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="vendorno" value="{{ vendorno }}">
+                        <p>
+                            <label for="id_doctype">DocType:</label>
+                            <input type="text" name="doctype" maxlength="255" required="" id="id_doctype">
+                        </p>
+                        <p>
+                            <label for="id_pono">PONO:</label>
+                            <select name="pono" id="id_pono" required="">
+                                <!-- Options for selecting PONO -->
+                                {% for purchase in purchase %}
+                                    <option value="{{ purchase.pono }}">{{ purchase.pono }}</option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="id_docname">Docname:</label>
+                            <input type="text" name="docname" maxlength="255" required="" id="id_docname">
+                        </p>
+                        <!-- Input for file selection -->
+                        <input type="file" name="files" id="fileInput" class="file-input" multiple>
+                        <label for="fileInput" class="custom-file-upload">Select Files</label>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <!-- Close and Upload buttons -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="uploadForm" class="btn btn-primary">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Datepicker JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <!-- Initialize Datepicker and Filters -->
+    <script>
+        $(document).ready(function() {
+            // Initialize datepicker
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+    
+            // Show confirm button when date is changed
+            $('.datepicker').on('changeDate', function() {
+                $(this).closest('tr').find('.btn-confirm').show();
+            });
+    
+            // Confirm button click handler
+            $('.btn-confirm').click(function() {
+                var button = $(this); // Reference to the button clicked
+                var pono = button.data('pono');
+                var newDate = button.closest('tr').find('.datepicker').val();
+    
+                $.ajax({
+                    method: 'POST',
+                    url: '/update_inspection_date/',
+                    data: {
+                        pono: pono,
+                        new_date: newDate,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Date updated successfully');
+                            // Hide the button
+                            button.hide();
+                            // Disable the datepicker input
+                            button.closest('tr').find('.datepicker').prop('readonly', true);
+                        } else {
+                            alert('Error updating date: ' + response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error updating date: ' + error);
+                    }
+                });
+            });
+    
+            // Filter based on checkboxes
+            $('#filterProposedNull, #filterInspectionNull, #filterBothNotNull').change(function() {
+                filterTable();
+            });
+    
+            // Search functionality
+            $('#searchInput').on('keyup', function() {
+                var searchText = $(this).val().toLowerCase();
+    
+                $('#purchaseOrdersTableBody tr').each(function() {
+                    var pono = $(this).find('td:nth-child(1)').text().toLowerCase(); // PONO column
+                    var customer = $(this).find('td:nth-child(2)').text().toLowerCase(); // Customer column
+    
+                    if (pono.indexOf(searchText) === -1 && customer.indexOf(searchText) === -1) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            });
+    
+            // Upload button click handler
+            $('.btn-upload-file').click(function() {
+                var pono = $(this).data('pono');
+                $('#id_pono').empty(); // Clear existing options
+                $('#id_pono').append($('<option>', {
+                    value: pono,
+                    text: pono,
+                    selected: true // Select the current PONO
+                }));
+            });
+    
+            // Initial filtering
+            filterTable();
+        });
+    
+        // Function to filter table rows based on checkboxes
+        function filterTable() {
+            var filterProposedNull = $('#filterProposedNull').is(':checked');
+            var filterInspectionNull = $('#filterInspectionNull').is(':checked');
+            var filterBothNotNull = $('#filterBothNotNull').is(':checked');
+    
+            $('.po-row').each(function() {
+                var inspectionDate = $(this).data('inspection-date');
+                var inspectionDateProposed = $(this).data('inspection-date-proposed');
+    
+                // Convert string "None" to boolean false for comparison
+                if (inspectionDate === "None") {
+                    inspectionDate = false;
+                } else {
+                    inspectionDate = true;
+                }
+                if (inspectionDateProposed === "None") {
+                    inspectionDateProposed = false;
+                } else {
+                    inspectionDateProposed = true;
+                }
+    
+                var showRow = true;
+    
+                // Apply filters
+                if (filterProposedNull && inspectionDateProposed) {
+                    showRow = false;
+                }
+    
+                if (filterInspectionNull && (inspectionDate || !inspectionDateProposed)) {
+                    showRow = false;
+                }
+    
+                if (filterBothNotNull && inspectionDate && inspectionDateProposed) {
+                    showRow = false;
+                }
+    
+                // Show or hide row based on filters
+                if (showRow) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

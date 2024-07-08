@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendors List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Global body styling */
+        body {
+            background-color: #f8f9fa; /* Light grey background */
+            font-family: Arial, sans-serif; /* Font style */
+            margin: 0; /* Remove default margin */
+            display: flex; /* Flex container */
+            min-height: 100vh; /* Minimum full viewport height */
+        }
+        
+        /* Main content section */
+        .main-content {
+            flex: 5; /* Take 5/6th of available space */
+            padding: 20px; /* Padding inside */
+            overflow-y: auto; /* Allow scrolling if content exceeds viewport */
+        }
+        
+        /* Notifications sidebar */
+        .notifications-tab {
+            flex: 1; /* Take 1/6th of available space */
+            max-width: 16.66%; /* Maximum width (equivalent to one sixth) */
+            padding: 20px; /* Padding inside */
+            background-color: white; /* White background */
+            border-left: 1px solid #ccc; /* Left border */
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Box shadow */
+            overflow-y: auto; /* Allow scrolling */
+        }
+        
+        /* Individual notification item */
+        .notification-item {
+            background-color: #e2f0f9; /* Light blue background */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px; /* Padding inside */
+            margin-bottom: 10px; /* Margin bottom */
+            text-decoration: none; /* Remove default underline */
+            color: inherit; /* Inherit text color */
+            transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition */
+            display: block; /* Block display */
+        }
+        .notification-item:hover {
+            transform: scale(1.03); /* Scale effect on hover */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+            text-decoration: none; /* Remove underline on hover */
+        }
+        .notification-item h5 {
+            margin: 5px 0 0 0; /* Margin top for heading */
+            font-size: 16px; /* Font size */
+            color: #333; /* Dark grey color */
+        }
+        .notification-item p {
+            margin: 0; /* Remove margin */
+            font-size: 14px; /* Font size */
+            color: #666; /* Grey color */
+        }
+        
+        /* Vendor card styling */
+        .vendor-card {
+            text-decoration: none; /* Remove underline */
+            color: inherit; /* Inherit text color */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+            width: 100%; /* Full width */
+        }
+        .vendor-card:hover {
+            transform: scale(1.05); /* Scale effect on hover */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+        }
+        .card {
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light box shadow */
+            transition: box-shadow 0.3s ease-in-out; /* Smooth shadow transition */
+            height: 100%; /* Full height */
+            display: flex; /* Flexbox layout */
+            flex-direction: column; /* Column layout */
+            background-color: #ffffff; /* White background */
+            border: none; /* No border */
+        }
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+        }
+        .card-body {
+            padding: 20px; /* Padding inside */
+            flex: 1; /* Take remaining space */
+            display: flex; /* Flexbox layout */
+            flex-direction: column; /* Column layout */
+            justify-content: space-between; /* Space between elements */
+        }
+        .card-title {
+            margin: 0 0 10px; /* Margin bottom for title */
+            font-size: 18px; /* Font size */
+            font-weight: bold; /* Bold font weight */
+            color: #2c3e50; /* Darker shade */
+            overflow: hidden; /* Overflow hidden */
+            text-overflow: ellipsis; /* Ellipsis for overflow */
+            white-space: nowrap; /* No wrap for text */
+        }
+        .card-text {
+            font-size: 14px; /* Font size */
+            color: #7f8c8d; /* Grey color */
+            margin-bottom: 0; /* No margin bottom */
+        }
+        
+        /* Header styling */
+        h1 {
+            color: #343a40; /* Dark grey color */
+            margin-bottom: 30px; /* Margin bottom */
+            text-align: center; /* Center align */
+        }
+        
+        /* Vendor list layout */
+        .vendor-list {
+            display: flex; /* Flexbox layout */
+            flex-wrap: wrap; /* Wrap items */
+            gap: 20px; /* Gap between items */
+            justify-content: center; /* Center justify items */
+        }
+        .vendor-item {
+            flex: 1 1 calc(33.33% - 20px); /* Flex properties */
+            max-width: calc(33.33% - 20px); /* Maximum width */
+            display: flex; /* Flexbox layout */
+        }
+        
+        /* Search bar styling */
+        .search-bar {
+            margin-bottom: 20px; /* Margin bottom */
+            display: flex; /* Flexbox layout */
+            justify-content: center; /* Center justify */
+            align-items: center; /* Center align items vertically */
+            gap: 10px; /* Gap between input and checkbox */
+        }
+        .search-bar input {
+            width: 50%; /* Width */
+            padding: 10px; /* Padding */
+            border-radius: 5px; /* Rounded corners */
+            border: 1px solid #ccc; /* Border */
+        }
+        .search-bar label {
+            display: flex; /* Flex layout for alignment */
+            align-items: center; /* Align items vertically */
+            gap: 5px; /* Gap between checkbox and label */
+        }
+    </style>
+</head>
+<body>
+    <!-- Main content section -->
+    <div class="main-content">
+        <div class="container">
+            <h1 class="text-center">Vendors</h1>
+            
+            <!-- Search bar -->
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search vendors by name, ID, or email...">
+                <label>
+                    <input type="checkbox" id="ia-pending-checkbox"> Ia Pending Only
+                </label>
+            </div>
+            
+            <!-- Vendor list container -->
+            <div class="vendor-list" id="vendor-list">
+                {% for vendor in vendor %}
+                    <div class="vendor-item" data-name="{{ vendor.vendorname }}" data-id="{{ vendor.vendorno }}" data-email="{{ vendor.email }}" data-pending-count="{{ vendor.pending_inspection_count }}">
+                        <a href="{% url 'purchaseorder' vendor.vendorno %}" class="vendor-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ vendor.vendorname }}</h5>
+                                    <p class="card-text"><strong>ID:</strong> {{ vendor.vendorno }}</p>
+                                    <p class="card-text"><strong>Territory:</strong> {{ vendor.territory }}</p>
+                                    <p class="card-text"><strong>Email:</strong> {{ vendor.email }}</p>
+                                    <p class="card-text"><strong>POs:</strong> {{ vendor.po_count }}</p>
+                                    <p class="card-text"><strong>Ia Pending:</strong> {{ vendor.pending_inspection_count }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications sidebar -->
+    <div class="notifications-tab">
+        <h3>Notifications</h3>
+        {% for purchase in purchase %}
+            {% if purchase.alerts %}
+                <a href="{% url 'purchaseorder' purchase.vendorno_id %}" class="notification-item">
+                    <div><strong>Vendor ID:</strong> {{ purchase.vendorno_id }}</div>
+                    <div><strong>PO No:</strong> {{ purchase.pono }}</div>
+                    <h5>{{ purchase.alerts }}</h5>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS for search and Ia Pending filter functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('search-input');
+            const iaPendingCheckbox = document.getElementById('ia-pending-checkbox');
+            const vendorList = document.getElementById('vendor-list');
+            const vendorItems = vendorList.getElementsByClassName('vendor-item');
+
+            function filterVendors() {
+                const filter = searchInput.value.toLowerCase();
+                const iaPendingOnly = iaPendingCheckbox.checked;
+
+                Array.from(vendorItems).forEach(item => {
+                    const name = item.getAttribute('data-name').toLowerCase();
+                    const id = item.getAttribute('data-id').toLowerCase();
+                    const email = item.getAttribute('data-email').toLowerCase();
+                    const pendingCount = parseInt(item.getAttribute('data-pending-count'), 10); // Assuming 'data-pending-count' holds the pending IA count
+
+                    const matchesSearch = name.includes(filter) || id.includes(filter) || email.includes(filter);
+                    const matchesIaPending = !iaPendingOnly || pendingCount > 0;
+
+                    if (matchesSearch && matchesIaPending) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Add event listeners
+            searchInput.addEventListener('input', filterVendors);
+            iaPendingCheckbox.addEventListener('change', filterVendors);
+
+            // Initial filter application
+            filterVendors();
+        });
+    </script>
+</body>
+</html>
