@@ -1,3 +1,4 @@
+
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -10,10 +11,13 @@ from django.db import models
 
 class AppMainDocument(models.Model):
     id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    docname = models.CharField(db_column='DocName', max_length=255)  # Field name made lowercase.
-    doc = models.FileField(db_column='Doc',upload_to="files",max_length=100, blank=True, null=True)  # Field name made lowercase.
+    doc = models.CharField(db_column='Doc', max_length=100, blank=True, null=True)  # Field name made lowercase.
     doctype = models.CharField(db_column='DocType', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    pono = models.ForeignKey('AppMainPurchaseorder', models.DO_NOTHING,max_length=255, db_column='PONO_id', blank=True, null=True)  # Field name made lowercase.
+    pono = models.ForeignKey('AppMainPurchaseorder', models.DO_NOTHING, db_column='PONO_id', blank=True, null=True)  # Field name made lowercase.
+    docname = models.TextField(db_column='DocName', blank=True, null=True)  # Field name made lowercase.
+    vendorno = models.ForeignKey('AppMainVendor', models.DO_NOTHING, db_column='VendorNo_id', blank=True, null=True)  # Field name made lowercase.
+    convention = models.CharField(db_column='Convention', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    date = models.DateField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -30,10 +34,23 @@ class AppMainPurchaseorder(models.Model):
     alerts = models.CharField(db_column='Alerts', blank=True, null=True)  # Field name made lowercase.
     inspectiondateproposed = models.DateField(db_column='InspectionDateProposed', blank=True, null=True)  # Field name made lowercase.
     status = models.CharField(db_column='Status')  # Field name made lowercase.
+    username = models.ForeignKey('AppMainUsers', models.DO_NOTHING, blank=True, null=True)
+    vendoralerts = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'app_main_purchaseorder'
+
+
+class AppMainUsers(models.Model):
+    username = models.CharField(primary_key=True, max_length=255)
+    role = models.CharField(max_length=5)
+    password = models.CharField(max_length=500)
+    email = models.CharField(max_length=254)
+
+    class Meta:
+        managed = False
+        db_table = 'app_main_users'
 
 
 class AppMainVendor(models.Model):

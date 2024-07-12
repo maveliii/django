@@ -41,7 +41,6 @@
         }
         .btn-confirm {
             background-color: #007bff; /* Bootstrap primary color */
-            display: none; /* Initially hidden */
         }
         .btn-confirm:hover {
             background-color: #0056b3; /* Darker shade for hover */
@@ -53,92 +52,218 @@
             background-color: #e0a800; /* Darker shade for hover */
         }
         .datepicker {
-            border: 1px solid #495057; /* Darker border color */
+            border: 1px solid #495057;
+            width: 30%;
+            margin-right: 875px;
+             /* Darker border color */
         }
+        .filtermain {
+            display: flex;
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .checkbox-main {
+            margin-left: 30px;
+            margin-top: 5px;
+        }
+        #top-section {
+            display: none; /* Initially hidden */
+        }
+        .action-main {
+            display: flex;
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            max-height: 600px; /* Adjust this height as needed */
+            overflow-y: auto;
+            border: 1px solid #ddd; /* Optional: Adds a border around the table container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-danger {
+            display: block;
+            width: 100px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;;
+            color: white;
+            background-color: red;
+            height:50px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-left: auto; 
+            margin-right: 0;
+        }
+        .btn-danger:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .sign-out {
+            width:100%;
+            display: flex;
+        }
+        .btn-danger-two {
+            display: block;
+            width: 165px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;;
+            color: white;
+            background-color: goldenrod;
+            height:50px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-left: 0; 
+            margin-right: auto;
+        }
+        .btn-danger-two:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .notifications-tab {
+            flex: 1; /* Take 1/6th of available space */
+            max-width: 16.66%; /* Maximum width (equivalent to one sixth) */
+            padding: 20px; /* Padding inside */
+            background-color: white; /* White background */
+            border-left: 1px solid #ccc; /* Left border */
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Box shadow */
+            overflow-y: auto; /* Allow scrolling */
+        }
+        
+        /* Individual notification item */
+        .notification-item {
+            background-color: #e2f0f9; /* Light blue background */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px; /* Padding inside */
+            margin-bottom: 10px; /* Margin bottom */
+            text-decoration: none; /* Remove default underline */
+            color: inherit; /* Inherit text color */
+            transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition */
+            display: block; /* Block display */
+        }
+        .notification-item:hover {
+            transform: scale(1.03); /* Scale effect on hover */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+            text-decoration: none; /* Remove underline on hover */
+        }
+        .notification-item h5 {
+            margin: 5px 0 0 0; /* Margin top for heading */
+            font-size: 16px; /* Font size */
+            color: #333; /* Dark grey color */
+        }
+        .notification-item p {
+            margin: 0; /* Remove margin */
+            font-size: 14px; /* Font size */
+            color: #666; /* Grey color */
+        }
+        
     </style>
 </head>
-<body>
+<body class="d-flex">
     <div class="container">
-        <h1 class="text-center mb-4">Purchase Orders</h1>
+        <div>
+            <div class="sign-out">
+                <a href="{% url 'vendoraccount' vendorno %}" class="btn-danger-two">Account Settings</a>
+                <a href="{% url 'signin' vendorno %}" class="btn-danger">Sign Out</a>
+            </div>
+            <h1 class="text-center mb-4">Purchase Orders</h1>
 
-        <!-- Vendor Information and Upload Button -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h3>Vendor: {{ vendorname }}</h3> <!-- Display vendor name -->
+            <!-- Vendor Information and Upload Button -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3>Vendor: {{ vendorname }}</h3> <!-- Display vendor name -->
+                </div>
+            </div>
+
+            <!-- Search and filter options -->
+            <div class="filtermain">
+                <div class="">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search PONO or Customer">
+                </div>
+                <div class="checkbox-main">
+                    <input type="checkbox" id="filterProposedNull" class="form-check-input" name="filterProposedNull" checked>
+                    <label class="form-check-label" for="filterProposedNull">Inspection Date not Proposed</label>
+                </div>
+                <div class="checkbox-main">
+                    <input type="checkbox" id="filterInspectionNull" class="form-check-input" name="filterInspectionNull">
+                    <label class="form-check-label" for="filterInspectionNull">Inspection date not approved</label>
+                </div>
+                <div class="checkbox-main">
+                    <input type="checkbox" id="filterBothNotNull" class="form-check-input" name="filterBothNotNull">
+                    <label class="form-check-label" for="filterBothNotNull">Hide Inspection date approved</label>
+                </div>
+            </div>
+
+            <!-- Top Section for Actions on Selected POs -->
+            <div id="top-section" class="mb-4 action-main">
+                <div class="input-group date mb-3">
+                    <input type="text" class="form-control datepicker" id="bulk_inspection_date" placeholder="Select Date">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </span>
+                </div>
+                <button class="btn btn-primary btn-confirm" id="bulk_confirm_button">Confirm for Selected POs</button>
+            </div>
+
+            <!-- Table displaying purchase orders -->
+            <div class="table-container">
+                <table class="table table-striped table-bordered" id="po-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col"><input type="checkbox" id="select_all"></th>
+                            <th scope="col">PONO</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Delivery Date</th>
+                            <th scope="col">Inspection Date Submission</th>
+                            <th scope="col">Inspection Date</th>
+                            <th scope="col">Inspection Date Proposed</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Upload Files</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchaseOrdersTableBody">
+                        <!-- Loop through purchase orders -->
+                        {% for purchase in purchase %}
+                            <tr class="po-row" data-pono="{{ purchase.pono }}" data-inspection-date="{{ purchase.inspectiondate }}" data-inspection-date-proposed="{{ purchase.inspectiondateproposed }}">
+                                <td><input type="checkbox" class="select_po" data-pono="{{ purchase.pono }}"></td>
+                                <td>{{ purchase.pono }}</td>
+                                <td>{{ purchase.customer }}</td>
+                                <td>{{ purchase.shipdate }}</td>
+                                <td>{{ purchase.iasubmissiondate }}</td>
+                                <td>{{ purchase.inspectiondate }}</td>
+                                <td>{{ purchase.inspectiondateproposed }} </td>
+                                <td>{{ purchase.status }}</td>
+                                <td>
+                                    <!-- Button to upload files -->
+                                    <button type="button" class="btn btn-warning btn-upload-file" data-bs-toggle="modal" data-bs-target="#uploadModal" data-pono="{{ purchase.pono }}">Upload Files</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <!-- Search and filter options -->
-        <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search PONO or Customer">
-        </div>
-        <div class="mb-3">
-            <input type="checkbox" id="filterProposedNull" class="form-check-input" name="filterProposedNull" checked>
-            <label class="form-check-label" for="filterProposedNull">Inspection Date not Proposed</label>
-        </div>
-        <div class="mb-3">
-            <input type="checkbox" id="filterInspectionNull" class="form-check-input" name="filterInspectionNull">
-            <label class="form-check-label" for="filterInspectionNull">Inspection date not approved</label>
-        </div>
-        <div class="mb-3">
-            <input type="checkbox" id="filterBothNotNull" class="form-check-input" name="filterBothNotNull">
-            <label class="form-check-label" for="filterBothNotNull">Hide POs where Inspection date is approved</label>
-        </div>
-
-        <!-- Table displaying purchase orders -->
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">PONO</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Delivery Date</th>
-                        <th scope="col">Inspection Date Submission</th>
-                        <th scope="col">Inspection Date</th>
-                        <th scope="col">Inspection Date Proposed</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Actions</th>
-                        <th scope="col">Upload Files</th>
-                    </tr>
-                </thead>
-                <tbody id="purchaseOrdersTableBody">
-                    <!-- Loop through purchase orders -->
-                    {% for purchase in purchase %}
-                        <tr class="po-row" data-pono="{{ purchase.pono }}" data-inspection-date="{{ purchase.inspectiondate }}" data-inspection-date-proposed="{{ purchase.inspectiondateproposed }}">
-                            <td>{{ purchase.pono }}</td>
-                            <td>{{ purchase.customer }}</td>
-                            <td>{{ purchase.shipdate }}</td>
-                            <td>{{ purchase.iasubmissiondate }}</td>
-                            <td>{{ purchase.inspectiondate }}</td>
-                            <td>
-                                <!-- Display proposed inspection date or input for proposing -->
-                                {% if not purchase.inspectiondate %}
-                                    <div class="input-group date">
-                                        <input type="text" class="form-control datepicker" name="inspection_date_proposed" value="{% if purchase.inspectiondateproposed %}{{ purchase.inspectiondateproposed }}{% else %}Select Date{% endif %}">
-                                        <span class="input-group-addon">
-                                            <i class="glyphicon glyphicon-calendar"></i>
-                                        </span>
-                                    </div>
-                                {% else %}
-                                    {{ purchase.inspectiondateproposed }}
-                                {% endif %}
-                            </td>
-                            <td>{{ purchase.status }}</td>
-                            <td>
-                                <!-- Show confirm button if inspection date is not set -->
-                                {% if not purchase.inspectiondate %}
-                                    <button class="btn btn-primary btn-confirm" data-pono="{{ purchase.pono }}">Confirm</button>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <!-- Button to upload files -->
-                                <button type="button" class="btn btn-warning btn-upload-file" data-bs-toggle="modal" data-bs-target="#uploadModal" data-pono="{{ purchase.pono }}">Upload Files</button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    </div>
+    <div class="notifications-tab">
+        <h3>Notifications</h3>
+        {% for purchase in purchase %}
+            {% if purchase.vendoralerts %}
+                <a class="notification-item">
+                    <div><strong>PO No:</strong> {{ purchase.pono }}</div>
+                    <h5>{{ purchase.vendoralerts|safe }}</h5>
+                </a>
+            {% endif %}
+        {% endfor %}
     </div>
 
     <!-- Bootstrap Modal for Upload -->
@@ -199,40 +324,49 @@
                 autoclose: true
             });
     
-            // Show confirm button when date is changed
-            $('.datepicker').on('changeDate', function() {
-                $(this).closest('tr').find('.btn-confirm').show();
+            // Handle select all checkbox
+            $('#select_all').change(function() {
+                $('.select_po').prop('checked', $(this).prop('checked'));
+                toggleTopSection();
             });
     
-            // Confirm button click handler
-            $('.btn-confirm').click(function() {
-                var button = $(this); // Reference to the button clicked
-                var pono = button.data('pono');
-                var newDate = button.closest('tr').find('.datepicker').val();
+            // Handle individual checkbox change
+            $('.select_po').change(function() {
+                toggleTopSection();
+            });
     
-                $.ajax({
-                    method: 'POST',
-                    url: '/update_inspection_date/',
-                    data: {
-                        pono: pono,
-                        new_date: newDate,
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Date updated successfully');
-                            // Hide the button
-                            button.hide();
-                            // Disable the datepicker input
-                            button.closest('tr').find('.datepicker').prop('readonly', true);
-                        } else {
-                            alert('Error updating date: ' + response.error);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Error updating date: ' + error);
-                    }
+            // Handle bulk confirm button click
+            $('#bulk_confirm_button').click(function() {
+                var selectedPOs = [];
+                $('.select_po:checked').each(function() {
+                    selectedPOs.push($(this).data('pono'));
                 });
+    
+                if (selectedPOs.length > 0) {
+                    var newDate = $('#bulk_inspection_date').val();
+                    $.ajax({
+                        method: 'POST',
+                        url: '/update_inspection_date/',
+                        data: {
+                            pnos: selectedPOs,
+                            new_date: newDate,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Date updated successfully for selected POs');
+                                location.reload(); // Reload the page to reflect changes
+                            } else {
+                                alert('Error updating date: ' + response.error);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Error updating date: ' + error);
+                        }
+                    });
+                } else {
+                    alert('No POs selected');
+                }
             });
     
             // Filter based on checkboxes
@@ -245,8 +379,8 @@
                 var searchText = $(this).val().toLowerCase();
     
                 $('#purchaseOrdersTableBody tr').each(function() {
-                    var pono = $(this).find('td:nth-child(1)').text().toLowerCase(); // PONO column
-                    var customer = $(this).find('td:nth-child(2)').text().toLowerCase(); // Customer column
+                    var pono = $(this).find('td:nth-child(2)').text().toLowerCase(); // PONO column
+                    var customer = $(this).find('td:nth-child(3)').text().toLowerCase(); // Customer column
     
                     if (pono.indexOf(searchText) === -1 && customer.indexOf(searchText) === -1) {
                         $(this).hide();
@@ -270,6 +404,16 @@
             // Initial filtering
             filterTable();
         });
+    
+        // Function to toggle the top section visibility
+        function toggleTopSection() {
+            var selectedCount = $('.select_po:checked').length;
+            if (selectedCount > 0) {
+                $('#top-section').show();
+            } else {
+                $('#top-section').hide();
+            }
+        }
     
         // Function to filter table rows based on checkboxes
         function filterTable() {

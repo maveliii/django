@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <p>The inspection dates for the following POs have been rejected:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PO Number</th>
+                <th>Rejection Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in orders %}
+            <tr>
+                <td>{{ item.order.pono }}</td>
+                <td>{{ item.rejection_reason }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Please update your changed inspection date in the portal using the link.</p>
+    <p>http://10.0.0.208:8000/{{vendorno}}/signin</p>
+    <p>Best regards,</p>
+    <p>J&J Sourcing</p>
+</body>
+</html>

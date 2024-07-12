@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Account</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light grey background */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1 {
+            color: #343a40; /* Dark grey */
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        .card-title {
+            color: #007bff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .card p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .btn-danger {
+            display: block;
+            width: 75px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;;
+            color: white;
+            background-color: goldenrod;
+            height:50px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-left: 0; 
+            margin-right: auto;
+        }
+        .btn-danger:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .sign-out {
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sign-out">
+            <a href="{% url 'vendorpurchaseorder' vendor.vendorno %}" class="btn-danger">Home</a>
+        </div>
+        <h1 class="text-center mb-4">Vendor Account</h1>
+        <!-- Messages -->
+        {% if this %} 
+        {% if messages %}
+            <div class="alert alert-dismissible fade show">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}   
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Vendor Details</h5>
+                <p><strong>Vendor Name:</strong> {{ vendor.vendorname }}</p>
+                <p><strong>Territory:</strong> {{ vendor.territory }}</p>
+                <p><strong>Email:</strong> {{ vendor.email }}</p>
+                <p><strong>Email2:</strong> {{ vendor.email2 }}</p>
+                <p><strong>Email3:</strong> {{ vendor.email3 }}</p>
+                <p><strong>Email4:</strong> {{ vendor.email4 }}</p>
+                <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                    Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content"> 
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'vendoraccount' vendorno=vendor.vendorno %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="oldPassword" class="form-label">Old Password</label>
+                            <input type="password" class="form-control" id="oldPassword" name="old_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" name="confirm_new_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertElements = document.querySelectorAll('.alert-dismissible');
+            if (alertElements) {
+                setTimeout(() => {
+                    alertElements.forEach(alert => {
+                        alert.classList.remove('show');
+                        alert.classList.add('fade');
+                        setTimeout(() => {
+                            alert.style.display = 'none';
+                        }, 500);
+                    });
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -147,19 +147,47 @@
             align-items: center; /* Align items vertically */
             gap: 5px; /* Gap between checkbox and label */
         }
+        .btn-danger {
+            display: block;
+            width: 100px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;;
+            color: white;
+            background-color: red;
+            height:50px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-left: auto; 
+            margin-right: 0;
+        }
+        .btn-danger:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .sign-out {
+            width:100%;
+        }
     </style>
 </head>
 <body>
     <!-- Main content section -->
     <div class="main-content">
         <div class="container">
+            <div class="sign-out">
+                <a href="{% url 'adminlogin' %}" class="btn-danger">Sign Out</a>
+            </div>
             <h1 class="text-center">Vendors</h1>
+            <h2 class="text-center">User:{{username}}</h2>
             
             <!-- Search bar -->
             <div class="search-bar">
                 <input type="text" id="search-input" placeholder="Search vendors by name, ID, or email...">
                 <label>
-                    <input type="checkbox" id="ia-pending-checkbox"> Ia Pending Only
+                    <input type="checkbox" id="ia-pending-checkbox"checked> 
+                    <div>IA Pending</div>
                 </label>
             </div>
             
@@ -167,7 +195,7 @@
             <div class="vendor-list" id="vendor-list">
                 {% for vendor in vendor %}
                     <div class="vendor-item" data-name="{{ vendor.vendorname }}" data-id="{{ vendor.vendorno }}" data-email="{{ vendor.email }}" data-pending-count="{{ vendor.pending_inspection_count }}">
-                        <a href="{% url 'purchaseorder' vendor.vendorno %}" class="vendor-card">
+                        <a href="{% url 'purchaseorder' vendor.vendorno username %}" class="vendor-card">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ vendor.vendorname }}</h5>
@@ -190,11 +218,15 @@
         <h3>Notifications</h3>
         {% for purchase in purchase %}
             {% if purchase.alerts %}
-                <a href="{% url 'purchaseorder' purchase.vendorno_id %}" class="notification-item">
-                    <div><strong>Vendor ID:</strong> {{ purchase.vendorno_id }}</div>
-                    <div><strong>PO No:</strong> {{ purchase.pono }}</div>
-                    <h5>{{ purchase.alerts }}</h5>
-                </a>
+                {% for vendor in vendor %}
+                    {% if vendor.vendorno == purchase.vendorno_id %}
+                        <a href="{% url 'purchaseorder' purchase.vendorno_id username %}" class="notification-item">
+                            <div><strong>Vendor Name:</strong> {{ vendor.vendorname }}</div>
+                            <div><strong>PO No:</strong> {{ purchase.pono }}</div>
+                            <h5>{{ purchase.alerts }}</h5>
+                        </a>
+                    {% endif %}  
+                {% endfor %}    
             {% endif %}
         {% endfor %}
     </div>

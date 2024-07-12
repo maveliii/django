@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Add custom styles here */
+        .btn-secondary {
+            text-align: center;
+            height: 70%;
+        }
+        .btn-secondary2 {
+            text-align: center;
+            height: 70%;
+            background-color: goldenrod;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'adminhome' username %}" type="button" class="btn btn-secondary2">
+                Home
+            </a>
+            <h1>Admin Panel</h1>
+            <a href="#usermainarea" type="button" class="btn btn-secondary">
+                Go to Users
+            </a>
+        </div>
+        
+        <!-- Vendors Table -->
+        <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Vendors</h2>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVendorModal">
+                    Add Vendor
+                </button>
+            </div>
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>Vendor Id</th>
+                        <th>Vendor Name</th>
+                        <th>Email</th>
+                        <th>Territory</th>
+                        <th>IA alert</th>
+                        <th>Actions</th> <!-- New column for actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through vendors -->
+                    {% for vendor in vendors %}
+                    <tr>
+                        <td>{{ vendor.vendorno }}</td>
+                        <td>{{ vendor.vendorname }}</td>
+                        <td>{{ vendor.email }}</td>
+                        <td>{{ vendor.territory }}</td>
+                        <td>{{ vendor.iaalertdays }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#addVendorModal" onclick="editVendor('{{ vendor.vendorno }}', '{{ vendor.vendorname }}', '{{ vendor.email }}', '{{ vendor.territory }}', '{{ vendor.iaalertdays }}', '{{ vendor.email2 }}', '{{ vendor.email3 }}', '{{ vendor.email4 }}', '{{ vendor.password }}')">
+                                Modify
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteVendorModal" onclick="deleteVendor('{{ vendor.vendorno }}')">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Users Table -->
+        <div class="mt-5" id="usermainarea">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Users</h2>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    Add User
+                </button>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through users -->
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal" onclick="editUser('{{ user.username }}', '{{ user.role }}', '{{ user.password }}', '{{ user.email }}')">
+                                Modify
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="deleteUser('{{ user.username }}')">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+    
+    <!-- Bootstrap Modal for Add/Modify Vendor -->
+    <div class="modal fade" id="addVendorModal" tabindex="-1" aria-labelledby="addVendorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVendorModalLabel">Add Vendor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vendorForm" action="{% url 'addvendor' username %}" method="post" onsubmit="return confirm('Are you sure you want to add/modify this vendor?')">
+                        {% csrf_token %}
+                        <input type="hidden" id="vendorId" name="vendorId">
+                        <div class="mb-3">
+                            <label for="vendorno" class="form-label">Vendor Number</label>
+                            <input type="text" class="form-control" id="vendorno" name="vendorno" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vendorname" class="form-label">Vendor Name</label>
+                            <input type="text" class="form-control" id="vendorname" name="vendorname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="territory" class="form-label">Territory</label>
+                            <select class="form-select" id="territory" name="territory" required>
+                                <option value="NORTH">NORTH</option>
+                                <option value="SOUTH">SOUTH</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email2" class="form-label">Email 2</label>
+                            <input type="email" class="form-control" id="email2" name="email2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email3" class="form-label">Email 3</label>
+                            <input type="email" class="form-control" id="email3" name="email3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email4" class="form-label">Email 4</label>
+                            <input type="email" class="form-control" id="email4" name="email4">
+                        </div>
+                        <div class="mb-3">
+                            <label for="iaalertdays" class="form-label">IA alert days</label>
+                            <input type="iaalertdays" class="form-control" id="iaalertdays" name="iaalertdays">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add/Modify Vendor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap Modal for Add/Modify User -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm" action="{% url 'adduser' username %}" method="post" onsubmit="return confirm('Are you sure you want to add/modify this vendor?')">
+                        {% csrf_token %}
+                        <input type="hidden" id="userId" name="userId">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                                <option value="qa">QA</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userpassword" class="form-label">Password</label>
+                            <input type="userpassword" class="form-control" id="userpassword" name="userpassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="useremail" class="form-label">Email</label>
+                            <input type="useremail" class="form-control" id="useremail" name="useremail" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add/Modify User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap Modal for Delete Confirmation -->
+    <div class="modal fade" id="deleteVendorModal" tabindex="-1" aria-labelledby="deleteVendorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteVendorModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vendorForm" action="{% url 'deletevendor' username %}" method="post" onsubmit="return confirm('Are you sure you want to add/modify this vendor?')">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="vendormain" class="form-label">vendorno</label>
+                            <input type="vendormain" class="form-control" id="vendormain" name="vendormain" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm deletion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal for Delete Confirmation -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteUserModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm" action="{% url 'deleteuser' username %}" method="post" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="userid" class="form-label">Username</label>
+                            <input type="userid" class="form-control" id="userid" name="userid" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm deletion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script to populate modal fields for editing vendor -->
+    <script>
+        function editVendor(vendorId, vendorName, email, territory, iaAlertDays, email2, email3, email4, password) {
+            document.getElementById("vendorno").value = vendorId;
+            document.getElementById("vendorname").value = vendorName;
+            document.getElementById("email").value = email;
+            document.getElementById("territory").value = territory;
+            document.getElementById("email2").value = email2;
+            document.getElementById("email3").value = email3;
+            document.getElementById("email4").value = email4;
+            document.getElementById("password").value = password;
+            document.getElementById("iaalertdays").value = iaAlertDays;
+            // Add code to handle IA alert days if needed
+        }
+        function editUser(username, role,password,email) {
+            document.getElementById("username").value = username;
+            document.getElementById("role").value = role;
+            document.getElementById("userpassword").value = password;
+            document.getElementById("useremail").value = email;
+        }
+
+        function deleteVendor(vendorId) {
+            document.getElementById("vendormain").value = vendorId;
+        }
+        function deleteUser(userId) {
+            document.getElementById("userid").value = userId;
+        }
+    </script>
+</body>
+</html>
